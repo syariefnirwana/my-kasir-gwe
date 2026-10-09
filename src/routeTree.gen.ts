@@ -10,33 +10,74 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as MasukRouteImport } from './routes/masuk'
+import { Route as AuthenticatedAkunRouteImport } from './routes/_authenticated/akun'
+import { Route as AuthenticatedPilihPeranRouteImport } from './routes/_authenticated/pilih-peran'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasukRoute = MasukRouteImport.update({
+  id: '/masuk',
+  path: '/masuk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAkunRoute = AuthenticatedAkunRouteImport.update({
+  id: '/akun',
+  path: '/akun',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPilihPeranRoute = AuthenticatedPilihPeranRouteImport.update({
+  id: '/pilih-peran',
+  path: '/pilih-peran',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/masuk': typeof MasukRoute
+  '/akun': typeof AuthenticatedAkunRoute
+  '/pilih-peran': typeof AuthenticatedPilihPeranRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/masuk': typeof MasukRoute
+  '/akun': typeof AuthenticatedAkunRoute
+  '/pilih-peran': typeof AuthenticatedPilihPeranRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/masuk': typeof MasukRoute
+  '/_authenticated/akun': typeof AuthenticatedAkunRoute
+  '/_authenticated/pilih-peran': typeof AuthenticatedPilihPeranRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/masuk' | '/akun' | '/pilih-peran'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/masuk' | '/akun' | '/pilih-peran'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/masuk'
+    | '/_authenticated/akun'
+    | '/_authenticated/pilih-peran'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  MasukRoute: typeof MasukRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +89,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/masuk': {
+      id: '/masuk'
+      path: '/masuk'
+      fullPath: '/masuk'
+      preLoaderRoute: typeof MasukRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/akun': {
+      id: '/_authenticated/akun'
+      path: '/akun'
+      fullPath: '/akun'
+      preLoaderRoute: typeof AuthenticatedAkunRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pilih-peran': {
+      id: '/_authenticated/pilih-peran'
+      path: '/pilih-peran'
+      fullPath: '/pilih-peran'
+      preLoaderRoute: typeof AuthenticatedPilihPeranRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAkunRoute: typeof AuthenticatedAkunRoute
+  AuthenticatedPilihPeranRoute: typeof AuthenticatedPilihPeranRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAkunRoute: AuthenticatedAkunRoute,
+  AuthenticatedPilihPeranRoute: AuthenticatedPilihPeranRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  MasukRoute: MasukRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
