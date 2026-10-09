@@ -69,7 +69,7 @@ export function BottomNav() {
           <li key={item.label}>
             <Link
               to={item.to}
-              hash={"hash" in item ? item.hash : undefined}
+              {...("hash" in item ? { hash: item.hash } : {})}
               activeOptions={{ exact: item.exact, includeHash: false }}
               className="flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-muted-foreground"
               activeProps={{ className: "text-primary" }}

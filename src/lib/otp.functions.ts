@@ -36,7 +36,7 @@ export const requestOtp = createServerFn({ method: "POST" })
 
     const rnd = new Uint32Array(1);
     crypto.getRandomValues(rnd);
-    const code = String(rnd[0] % 10000).padStart(4, "0");
+    const code = String((rnd[0] ?? 0) % 10000).padStart(4, "0");
     const { error } = await supabaseAdmin.from("otp_codes").insert({
       phone_number: phone,
       code_hash: await sha256(`${phone}:${code}`),

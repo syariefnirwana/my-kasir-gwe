@@ -43,12 +43,12 @@ function ChooseRole() {
   const navigate = useNavigate();
   const { refresh } = useAuth();
 
-  async function submit() {
+  async function submit(): Promise<void> {
     if (!role) return;
     setBusy(true);
     const { error } = await supabase.rpc("choose_initial_role", { _role: role });
     setBusy(false);
-    if (error) return toast.error("Gagal menyimpan peran. Coba lagi.");
+    if (error) return void toast.error("Gagal menyimpan peran. Coba lagi.");
     await refresh();
     toast.success("Selamat datang!");
     navigate({ to: "/akun" });

@@ -42,14 +42,14 @@ function LoginPage() {
   const [simCode, setSimCode] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function onSend(e?: React.FormEvent) {
+  async function onSend(e?: React.FormEvent): Promise<void> {
     e?.preventDefault();
     const n = normalizePhone(phone);
-    if (!n) return toast.error("Nomor WhatsApp tidak valid. Contoh: 0812xxxxxxx");
+    if (!n) return void toast.error("Nomor WhatsApp tidak valid. Contoh: 0812xxxxxxx");
     setBusy(true);
     try {
       const res = await sendOtp({ data: { phone: n } });
-      if (!res.ok) return toast.error(res.error);
+      if (!res.ok) return void toast.error(res.error);
       setNormalized(res.phone);
       setSimCode(res.simulatedCode);
       setCode("");
@@ -62,17 +62,17 @@ function LoginPage() {
     }
   }
 
-  async function onVerify(value = code) {
+  async function onVerify(value = code): Promise<void> {
     if (value.length !== 4) return;
     setBusy(true);
     try {
       const res = await checkOtp({ data: { phone: normalized, code: value } });
       if (!res.ok) {
         setCode("");
-        return toast.error(res.error);
+        return void toast.error(res.error);
       }
       const { error } = await supabase.auth.verifyOtp({ token_hash: res.tokenHash, type: "magiclink" });
-      if (error) return toast.error("Gagal masuk. Coba lagi.");
+      if (error) return void toast.error("Gagal masuk. Coba lagi.");
       toast.success("Berhasil masuk");
       navigate({ to: safeRedirect(redirect) });
     } catch {
