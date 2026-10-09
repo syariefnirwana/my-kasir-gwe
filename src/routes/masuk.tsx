@@ -146,6 +146,7 @@ function LoginPage() {
               <div className="flex justify-center">
                 <InputOTP
                   maxLength={4}
+                  autoFocus
                   value={code}
                   inputMode="numeric"
                   onChange={(v) => {
